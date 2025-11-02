@@ -43,7 +43,18 @@ jobs:
           name: integration-install-log
           # The container writes the log into the repository workspace (mounted at
           # ${GITHUB_WORKSPACE}). From the runner's perspective the file is
-          # at ./install.log, so upload that relative path instead of the
-          # absolute '/entropy_bootstrap_linux/install.log' which doesn't exist
-          # on the runner filesystem.
+          # at ./install.log, so upload that relative path.
           path: install.log
+
+      - name: Show install.log summary
+        # Run regardless of previous step status so partial logs are visible on failures.
+        if: always()
+        run: |
+          # Print a short, clearly delimited summary of the log if it exists.
+          if [ -f install.log ]; then
+            echo "===== INSTALL LOG SUMMARY (last 20 lines) ====="
+            tail -n 20 install.log || echo "(install.log missing)"
+            echo "=============================================="
+          else
+            echo "(install.log missing)"
+          fi
