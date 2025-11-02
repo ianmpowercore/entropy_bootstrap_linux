@@ -1,0 +1,2 @@
+# Minimal shellcheck configuration to avoid false positives for sourced scripts and unused vars
+exclude=SC1091,SC2034
