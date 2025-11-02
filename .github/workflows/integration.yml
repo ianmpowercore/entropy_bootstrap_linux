@@ -31,7 +31,10 @@ jobs:
           else
             DRY_FLAG="--dry-run"
           fi
-          docker run --rm --env DRY_RUN=${DRY_RUN_INPUT} --name entropy-bootstrap-run entropy-bootstrap-ci \
+          # Mount the GitHub workspace into the container so install.log is written
+          # to the runner filesystem and can be uploaded as an artifact.
+          docker run --rm -v "${{ github.workspace }}:/entropy_bootstrap_linux" \
+            --env DRY_RUN=${DRY_RUN_INPUT} --name entropy-bootstrap-run entropy-bootstrap-ci \
             bash -lc "cd /entropy_bootstrap_linux && ./setup.sh ${DRY_FLAG} 2>&1 | tee /entropy_bootstrap_linux/install.log; exit ${PIPESTATUS[0]}"
 
       - name: Upload install.log
