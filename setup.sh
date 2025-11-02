@@ -5,16 +5,59 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-echo "Entropy Bootstrap v0.1.1"
-echo "🚀 Starting Entropy Bootstrap for Linux..."
-
-# Ensure we are in the repository root when running the script
+# Load repo defaults if present (does not export from file)
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "${REPO_ROOT}/configs/defaults.env" ]; then
+  # shellcheck source=/dev/null
+  # shellcheck disable=SC1091
+  source "${REPO_ROOT}/configs/defaults.env"
+fi
+
+# CLI argument parsing
+DRY_RUN="${DRY_RUN:-false}"
+show_help() {
+  cat <<'EOF'
+Usage: setup.sh [--dry-run] [-h|--help]
+
+Options:
+  --dry-run     Run in dry-run mode (echo actions instead of executing)
+  -h, --help    Show this help message
+
+Note: The script will source `configs/defaults.env` if present. By default
+DRY_RUN is true in the test defaults file; to perform real installs set
+DRY_RUN=false explicitly.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=true
+      shift
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      show_help
+      exit 2
+      ;;
+  esac
+done
+
+echo "Entropy Bootstrap ${ENTROPY_VERSION:-v0.1.3-tested} - Dry run: ${DRY_RUN:-false}"
+echo "🚀 Starting Entropy Bootstrap for Linux..."
 
 echo "📁 Repo root: ${REPO_ROOT}"
 
 echo "🔁 Updating package lists (safe to re-run)..."
-sudo apt update && sudo apt upgrade -y
+if [ "${DRY_RUN}" = "true" ]; then
+  echo "DRY_RUN: sudo apt update && sudo apt upgrade -y"
+else
+  sudo apt update && sudo apt upgrade -y
+fi
 
 # Source modular scripts if they exist
 if [ -f "${REPO_ROOT}/scripts/devtools.sh" ]; then

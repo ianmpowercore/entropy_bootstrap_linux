@@ -7,20 +7,39 @@ IFS=$'\n\t'
 
 echo "🔒 Setting up privacy and security..."
 
-sudo apt install -y \
+# Respect DRY_RUN
+if [ "${DRY_RUN:-false}" = "true" ]; then
+  DRY_ECHO=true
+else
+  DRY_ECHO=false
+fi
+
+run_cmd() {
+  if [ "${DRY_ECHO}" = "true" ]; then
+    echo "DRY_RUN: $*"
+  else
+    eval "$*"
+  fi
+}
+
+run_cmd "sudo apt install -y \
   ufw \
   fail2ban \
   clamav \
-  gnupg || true
+  gnupg || true"
 
 # Enable UFW if not active
 if command -v ufw >/dev/null 2>&1; then
-  if ! sudo ufw status | grep -qi active; then
-    echo "Enabling ufw firewall"
-    sudo ufw --force enable
+  if [ "${DRY_ECHO}" = "true" ]; then
+    echo "DRY_RUN: check and enable ufw if needed"
   else
-    echo "ufw already enabled"
+    if ! sudo ufw status | grep -qi active; then
+      echo "Enabling ufw firewall"
+      sudo ufw --force enable
+    else
+      echo "ufw already enabled"
+    fi
   fi
 fi
 
-echo "✅ Security baseline complete."
+echo "✅ Security baseline (dry-run: ${DRY_ECHO})"

@@ -1,0 +1,41 @@
+name: Integration (Docker dry-run)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run in dry-run mode (true/false)'
+        required: false
+        default: 'true'
+
+jobs:
+  docker-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build docker image
+        run: |
+          docker build -t entropy-bootstrap-ci .
+
+      - name: Run container (dry-run by default)
+        run: |
+          set -euo pipefail
+          DRY_RUN_INPUT="${{ github.event.inputs.dry_run || 'true' }}"
+          echo "Integration run - DRY_RUN=${DRY_RUN_INPUT}"
+          # Always default to dry-run unless explicitly set to false
+          if [ "${DRY_RUN_INPUT}" = "false" ]; then
+            DRY_FLAG=""
+          else
+            DRY_FLAG="--dry-run"
+          fi
+          docker run --rm --env DRY_RUN=${DRY_RUN_INPUT} --name entropy-bootstrap-run entropy-bootstrap-ci \
+            bash -lc "cd /entropy_bootstrap_linux && ./setup.sh ${DRY_FLAG} 2>&1 | tee /entropy_bootstrap_linux/install.log; exit ${PIPESTATUS[0]}"
+
+      - name: Upload install.log
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-install-log
+          path: /entropy_bootstrap_linux/install.log
