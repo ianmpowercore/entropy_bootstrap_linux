@@ -33,9 +33,10 @@ jobs:
           fi
           # Mount the GitHub workspace into the container so install.log is written
           # to the runner filesystem and can be uploaded as an artifact.
+          # Run the script via 'bash' (not relying on the executable bit inside the image)
           docker run --rm -v "${{ github.workspace }}:/entropy_bootstrap_linux" \
             --env DRY_RUN=${DRY_RUN_INPUT} --name entropy-bootstrap-run entropy-bootstrap-ci \
-            bash -lc "cd /entropy_bootstrap_linux && ./bootstrap/setup.sh ${DRY_FLAG} 2>&1 | tee /entropy_bootstrap_linux/ci_artifacts/install.log; exit ${PIPESTATUS[0]}"
+            bash -lc "cd /entropy_bootstrap_linux && bash ./bootstrap/setup.sh ${DRY_FLAG} 2>&1 | tee /entropy_bootstrap_linux/ci_artifacts/install.log; exit ${PIPESTATUS[0]}"
 
       - name: Upload install.log
         uses: actions/upload-artifact@v4
