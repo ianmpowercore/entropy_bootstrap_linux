@@ -18,8 +18,9 @@ jobs:
           set -euo pipefail
           # Ensure scripts are present
           ls -la
-          bash -lc 'bash -n setup.sh 2>&1 | tee bash_n_setup.log; exit ${PIPESTATUS[0]}'
-          bash -lc 'bash -n scripts/*.sh 2>&1 | tee bash_n_scripts.log; exit ${PIPESTATUS[0]}'
+          mkdir -p ci_artifacts
+          bash -lc 'bash -n bootstrap/setup.sh 2>&1 | tee ci_artifacts/bash_n_setup.log; exit ${PIPESTATUS[0]}'
+          bash -lc 'bash -n scripts/*.sh 2>&1 | tee ci_artifacts/bash_n_scripts.log; exit ${PIPESTATUS[0]}'
 
       - name: Install shellcheck
         run: |
@@ -29,14 +30,15 @@ jobs:
       - name: Run shellcheck and save output
         run: |
           set -euo pipefail
+          mkdir -p ci_artifacts
           # Run ShellCheck; preserve exit code from shellcheck while still tee-ing
-          bash -lc 'shellcheck -x scripts/*.sh 2>&1 | tee shellcheck.log; exit ${PIPESTATUS[0]}'
+          bash -lc 'shellcheck -x scripts/*.sh 2>&1 | tee ci_artifacts/shellcheck.log; exit ${PIPESTATUS[0]}'
 
       - name: Upload lint logs
         uses: actions/upload-artifact@v4
         with:
           name: shell-lint-logs
           path: |
-            bash_n_setup.log
-            bash_n_scripts.log
-            shellcheck.log
+            ci_artifacts/bash_n_setup.log
+            ci_artifacts/bash_n_scripts.log
+            ci_artifacts/shellcheck.log

@@ -6,7 +6,7 @@ set -Eeuo pipefail
 IFS=$'\n\t'
 
 DRY_RUN=true
-OUT_DIR="ci-artifacts"
+OUT_DIR="ci_artifacts"
 OUT_LOG="${OUT_DIR}/install.log"
 
 usage() {
@@ -46,7 +46,7 @@ docker build -t entropy-bootstrap-ci .
 echo "Running container (DRY_RUN=${DRY_RUN})..."
 # Mount the output directory so install.log is written to the host
 docker run --rm -v "$(pwd)/${OUT_DIR}:/entropy_bootstrap_linux" --env DRY_RUN=${DRY_RUN} --name entropy-bootstrap-run entropy-bootstrap-ci \
-  bash -lc "cd /entropy_bootstrap_linux && ./setup.sh --dry-run 2>&1 | tee /entropy_bootstrap_linux/install.log; exit \\\${PIPESTATUS[0]}"
+  bash -lc "cd /entropy_bootstrap_linux && ./bootstrap/setup.sh --dry-run 2>&1 | tee /entropy_bootstrap_linux/install.log; exit \\\${PIPESTATUS[0]}"
 
 if [ -s "$OUT_LOG" ]; then
   echo "Integration install log written to $OUT_LOG"

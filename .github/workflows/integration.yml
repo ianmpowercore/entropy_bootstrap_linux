@@ -35,7 +35,7 @@ jobs:
           # to the runner filesystem and can be uploaded as an artifact.
           docker run --rm -v "${{ github.workspace }}:/entropy_bootstrap_linux" \
             --env DRY_RUN=${DRY_RUN_INPUT} --name entropy-bootstrap-run entropy-bootstrap-ci \
-            bash -lc "cd /entropy_bootstrap_linux && ./setup.sh ${DRY_FLAG} 2>&1 | tee /entropy_bootstrap_linux/install.log; exit ${PIPESTATUS[0]}"
+            bash -lc "cd /entropy_bootstrap_linux && ./bootstrap/setup.sh ${DRY_FLAG} 2>&1 | tee /entropy_bootstrap_linux/ci_artifacts/install.log; exit ${PIPESTATUS[0]}"
 
       - name: Upload install.log
         uses: actions/upload-artifact@v4
@@ -43,17 +43,17 @@ jobs:
           name: integration-install-log
           # The container writes the log into the repository workspace (mounted at
           # ${GITHUB_WORKSPACE}). From the runner's perspective the file is
-          # at ./install.log, so upload that relative path.
-          path: install.log
+          # at ./ci_artifacts/install.log, so upload that relative path.
+          path: ci_artifacts/install.log
 
       - name: Show install.log summary
         # Run regardless of previous step status so partial logs are visible on failures.
         if: always()
         run: |
           # Print a short, clearly delimited summary of the log if it exists.
-          if [ -f install.log ]; then
+          if [ -f ci_artifacts/install.log ]; then
             echo "===== INSTALL LOG SUMMARY (last 20 lines) ====="
-            tail -n 20 install.log || echo "(install.log missing)"
+            tail -n 20 ci_artifacts/install.log || echo "(install.log missing)"
             echo "=============================================="
           else
             echo "(install.log missing)"

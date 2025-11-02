@@ -1,10 +1,54 @@
 #!/usr/bin/env bash
-# shim to preserve backwards compatibility. Calls the new script location.
+# bootstrap/setup.sh
+# Moved from repo root into bootstrap/ — adjust REPO_ROOT to the repository root.
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "${DIR}/bootstrap/setup.sh" "$@"
+# When this script lives in bootstrap/, REPO_ROOT should be the parent directory.
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Load repo defaults if present (does not export from file)
+if [ -f "${REPO_ROOT}/configs/defaults.env" ]; then
+  # shellcheck source=/dev/null
+  # shellcheck disable=SC1091
+  source "${REPO_ROOT}/configs/defaults.env"
+fi
+
+# CLI argument parsing
+DRY_RUN="${DRY_RUN:-false}"
+show_help() {
+  cat <<'EOF'
+Usage: bootstrap/setup.sh [--dry-run] [-h|--help]
+
+Options:
+  --dry-run     Run in dry-run mode (echo actions instead of executing)
+  -h, --help    Show this help message
+
+Note: The script will source `configs/defaults.env` if present. By default
+DRY_RUN is true in the test defaults file; to perform real installs set
+DRY_RUN=false explicitly.
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=true
+      shift
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      show_help
+      exit 2
+      ;;
+  esac
+done
+
+echo "Entropy Bootstrap ${ENTROPY_VERSION:-v0.1.3-tested} - Dry run: ${DRY_RUN:-false}"
 echo "🚀 Starting Entropy Bootstrap for Linux..."
 
 echo "📁 Repo root: ${REPO_ROOT}"
@@ -16,7 +60,7 @@ else
   sudo apt update && sudo apt upgrade -y
 fi
 
-# Source modular scripts if they exist
+# Source modular scripts if they exist (scripts are located at REPO_ROOT/scripts)
 if [ -f "${REPO_ROOT}/scripts/devtools.sh" ]; then
   echo "🧑‍💻 Running devtools..."
   # shellcheck source=/dev/null
