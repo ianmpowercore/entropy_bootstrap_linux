@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # entropy_bootstrap_linux/scripts/devtools.sh
-set -euo pipefail
+# Installs minimal developer packages useful for initial provisioning.
+# Re-runable; inspect before executing.
+set -Eeuo pipefail
+IFS=$'\n\t'
 
 echo "🧑‍💻 Installing development tools..."
 

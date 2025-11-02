@@ -7,29 +7,39 @@ Entropy bootstrap for a developer-first, modular Linux setup. Designed for Pop!_
 1. Inspect the repository and review the scripts in `scripts/` and `configs/`.
 2. Make the main orchestrator executable and run it:
 
+![Shell Lint](https://github.com/ianmpowercore/entropy_bootstrap_linux/actions/workflows/lint.yml/badge.svg)
+
 # entropy_bootstrap_linux
 
 Entropy bootstrap for a developer-first, modular Linux setup. Designed for Pop!_OS but compatible with Debian/Ubuntu-based systems.
 
-## Quick usage
-
-1. Inspect the repository and review the scripts in `scripts/` and `configs/`.
-2. Make the main orchestrator executable and run it:
+## Quick Start
 
 ```bash
+git clone https://github.com/ianmpowercore/entropy_bootstrap_linux.git
+cd entropy_bootstrap_linux
 chmod +x setup.sh
 ./setup.sh
 ```
 
-The scripts are designed to be re-runnable and idempotent where possible. Run them in an isolated environment (Codespaces or VM) before using on production hardware.
+Run the above in an isolated environment (Codespaces or VM) first. The scripts are designed to be re-runnable and idempotent where possible.
 
-## Security disclaimer
+## Security Notice
 
-Review every script before running it. This project is intended to be transparent and readable — do not run the scripts as root without understanding the commands. The maintainers accept no responsibility for damage or data loss; always back up important data.
+Always inspect and understand each script before executing `setup.sh`. This project aims for transparency; do not run scripts as root without reviewing their contents. Back up important data before making system changes.
+
+## Test in Docker
+
+To run a lightweight syntax-only test in Docker:
+
+```bash
+docker build -t entropy-bootstrap .
+docker run --rm entropy-bootstrap
+```
 
 ## CI
 
-A GitHub Actions workflow is included at `.github/workflows/syntax-check.yml` which validates shell script syntax on push and pull requests.
+A GitHub Actions workflow is included at `.github/workflows/lint.yml` which validates shell script syntax with `bash -n` and runs `shellcheck` on all `.sh` scripts.
 
 ## 📜 Script Overview
 

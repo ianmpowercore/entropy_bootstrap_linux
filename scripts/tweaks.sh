@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # entropy_bootstrap_linux/scripts/tweaks.sh
-set -euo pipefail
+# Applies optional GNOME/Pop!_OS tweaks (uses gsettings when available).
+set -Eeuo pipefail
+IFS=$'\n\t'
 
 echo "🎨 Applying Pop!_OS / GNOME tweaks (if available)..."
 

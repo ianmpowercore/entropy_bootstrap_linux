@@ -1,0 +1,42 @@
+name: Shell lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: Bash syntax + ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bash -n (syntax) and capture logs
+        run: |
+          set -euo pipefail
+          # Ensure scripts are present
+          ls -la
+          bash -lc 'bash -n setup.sh 2>&1 | tee bash_n_setup.log; exit ${PIPESTATUS[0]}'
+          bash -lc 'bash -n scripts/*.sh 2>&1 | tee bash_n_scripts.log; exit ${PIPESTATUS[0]}'
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Run shellcheck and save output
+        run: |
+          set -euo pipefail
+          # Run ShellCheck; preserve exit code from shellcheck while still tee-ing
+          bash -lc 'shellcheck -x scripts/*.sh 2>&1 | tee shellcheck.log; exit ${PIPESTATUS[0]}'
+
+      - name: Upload lint logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: shell-lint-logs
+          path: |
+            bash_n_setup.log
+            bash_n_scripts.log
+            shellcheck.log

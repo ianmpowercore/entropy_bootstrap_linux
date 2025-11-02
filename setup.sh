@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # entropy_bootstrap_linux/setup.sh
-set -euo pipefail
+# Orchestrator: run modular bootstrap scripts from `scripts/` and apply configs.
+# Usage: review scripts/, then run this script from the repo root.
+set -Eeuo pipefail
+IFS=$'\n\t'
 
+echo "Entropy Bootstrap v0.1.1"
 echo "🚀 Starting Entropy Bootstrap for Linux..."
 
 # Ensure we are in the repository root when running the script

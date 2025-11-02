@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # entropy_bootstrap_linux/scripts/privacy.sh
-set -euo pipefail
+# Installs and configures a basic security baseline (ufw, fail2ban, etc.).
+# Review before running.
+set -Eeuo pipefail
+IFS=$'\n\t'
 
 echo "🔒 Setting up privacy and security..."
 

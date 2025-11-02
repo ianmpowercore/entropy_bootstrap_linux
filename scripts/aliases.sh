@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # entropy_bootstrap_linux/scripts/aliases.sh
-set -euo pipefail
+# Adds a small set of convenient shell aliases to ~/.bash_aliases.
+# Safe to run multiple times.
+set -Eeuo pipefail
+IFS=$'\n\t'
 
 echo "⚙️ Setting up aliases..."
 
