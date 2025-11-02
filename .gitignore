@@ -1,0 +1,26 @@
+# Local editor swap and backup files
+*.swp
+*~
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+env/
+
+# Node
+node_modules/
+
+# IDEs
+.vscode/
+.idea/
+
+# Coverage
+.coverage
+
+# Misc
+.env
+.local/
+.cache/

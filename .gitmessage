@@ -1,0 +1,11 @@
+# Commit message template for entropy_bootstrap_linux
+
+# Brief (50 chars or less) summary of change
+#
+# More detailed explanatory text, if necessary. Wrap at 72 characters.
+#
+# Use a small list of changed modules or scripts, e.g.:
+# - scripts/devtools.sh: install list trimmed
+# - configs/.zshrc: add PATH handling
+#
+# Keep commits focused and modular.
