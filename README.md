@@ -1,6 +1,10 @@
 # entropy_bootstrap_linux
 
 Entropy bootstrap for a developer-first, modular Linux setup. Designed for Pop!_OS but compatible with Debian/Ubuntu-based systems.
+README.md
+=========
+
+Project description coming soon.
 
 ## Quick usage
 
@@ -8,6 +12,30 @@ Entropy bootstrap for a developer-first, modular Linux setup. Designed for Pop!_
 2. Make the main orchestrator executable and run it:
 
 ![Shell Lint](https://github.com/ianmpowercore/entropy_bootstrap_linux/actions/workflows/lint.yml/badge.svg)
+## Modular install system added
+
+This repository now includes a modular install system under the `install/` directory and a top-level
+`bootstrap.sh` orchestrator for dry-run / real installs. Quick notes:
+
+- Run a dry run locally:
+
+```bash
+DRY_RUN=true ./bootstrap.sh
+```
+
+- To perform real installs, set `DRY_RUN=false` in `defaults.env` then run `./bootstrap.sh`.
+
+- CI writes logs to the `ci-artifacts` directory and uploads `ci-artifacts/install.log` as an artifact.
+
+Files of interest:
+
+- `bootstrap.sh` — top-level entrypoint that orchestrates `install/*.sh` stages.
+- `install/helpers.sh` — shared helpers and `run_stage()` implementation.
+- `install/*.sh` — modular installers (devtools, security, apps, powertools).
+- `defaults.env` — top-level environment defaults used by `bootstrap.sh`.
+
+If you prefer not to track the `ci-artifacts/` directory in Git, keep it in `.gitignore` — CI will still write
+logs into it during runs and upload artifacts.
 
 # entropy_bootstrap_linux
 
