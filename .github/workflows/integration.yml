@@ -59,3 +59,19 @@ jobs:
           else
             echo "(install.log missing)"
           fi
+
+      - name: Upload defaults.env for traceability
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: defaults-env
+          path: defaults.env
+          if-no-files-found: ignore
+
+      - name: Debug workspace on failure
+        if: failure()
+        run: |
+          echo "=== DEBUG WORKSPACE LISTING ==="
+          ls -la ${{ github.workspace }}
+          echo "=== ENVIRONMENT SNAPSHOT ==="
+          env | sort | grep -E 'GITHUB|WORKSPACE|RUNNER' || true
